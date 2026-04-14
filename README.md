@@ -1,36 +1,161 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Webstack Take-Home Assignment
 
-## Getting Started
+A headless CMS blog built with WordPress, Elementor, WPGraphQL, and Next.js — recreating the provided homepage mockup as both a WordPress/Elementor page and a Next.js frontend.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| CMS | WordPress (local via XAMPP) |
+| Page Builder | Elementor |
+| GraphQL API | WPGraphQL plugin |
+| Frontend | Next.js (App Router) |
+| Styling | Custom CSS |
+
+---
+
+## Features
+
+- Responsive homepage layout matching the provided mockup
+- Blog post grid fetched dynamically from WordPress via GraphQL
+- Single post pages with dynamic routing (`/posts/[slug]`)
+- Author name and avatar display
+- About and Contact pages
+- Shared navigation bar across all pages
+- Loading and error handling states
+- Reusable React components
+
+---
+
+## Project Structure
+
+```
+app/
+├── layout.js               # Root layout (shared across all pages)
+├── page.js                 # Homepage — latest posts grid
+├── globals.css             # Global styles
+├── about/
+│   └── page.js             # About page
+├── contact/
+│   └── page.js             # Contact page
+└── posts/
+    └── [slug]/
+        └── page.js         # Dynamic single post page
+
+components/
+├── Header.jsx              # Navigation bar
+├── Hero.jsx                # Hero/banner section
+├── PostCard.jsx            # Individual post card
+└── PostsGrid.jsx           # Blog post grid layout
+
+lib/
+└── wordpress.js            # GraphQL queries and fetch helpers
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Part 1: WordPress + Elementor Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Install [XAMPP](https://www.apachefriends.org/) and start Apache + MySQL.
+2. Place WordPress in `htdocs/webstack-assessment` and complete the standard install.
+3. In the WordPress admin, install and activate:
+   - **Elementor** (free version)
+   - **WPGraphQL**
+4. Create at least 6 blog posts with featured images.
+5. Build the homepage in Elementor to match the provided mockup.
+6. The GraphQL endpoint will be available at:
+   ```
+   http://localhost:8080/webstack-assessment/graphql
+   ```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Part 2: Next.js Frontend Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Prerequisites
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Node.js 18+
+- WordPress running locally (see Part 1)
 
-## Deploy on Vercel
+### Installation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Navigate to the Next.js project folder:
+   ```bash
+   cd webstack-next
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env.local` file in the project root:
+   ```env
+   NEXT_PUBLIC_WORDPRESS_API_URL=http://localhost:8080/webstack-assessment/graphql
+   ```
+
+4. Start the development server:
+   ```bash
+   npx next dev --turbopack
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## GraphQL Usage
+
+All WordPress data is fetched via WPGraphQL — the REST API is not used. Example query used on the homepage:
+
+```graphql
+query GetLatestPosts {
+  posts(first: 6) {
+    nodes {
+      id
+      title
+      slug
+      excerpt
+      date
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      author {
+        node {
+          name
+          avatar {
+            url
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+## Deliverables
+
+- [x] GitHub repository with full source code
+- [x] This README with setup instructions
+- [x] Screenshots of both the WordPress/Elementor version and the Next.js frontend
+- [x] Demo video showcasing setup and functionality
+
+---
+
+## Notes
+
+- The WordPress instance is local. The Next.js app fetches from `localhost` by default.
+- To deploy publicly, WordPress would need to be hosted online, and `NEXT_PUBLIC_WORDPRESS_API_URL` updated accordingly.
+- Deployment of the Next.js app can be done via [Vercel](https://vercel.com) with a single `git push`.
+
+---
+
+## Author
+
+**Fidel Mudzamba**
